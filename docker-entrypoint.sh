@@ -13,13 +13,15 @@ if [ ! -d /app/static/uploads/pages ]; then
 fi
 # ──────────────────────────────────────────────────────────────
 
-# ── SSH key: copy from mount with correct permissions ─────
-# Docker mount preserves host permissions (often 0755),
-# but SSH requires 0600 on private keys.
-if [ -f /tmp/ssh-key/id_ed25519 ]; then
+# ── SSH key: from environment variable (base64) or mount ─────
+if [ -n "$SSH_PRIVATE_KEY" ]; then
+    echo "$SSH_PRIVATE_KEY" | base64 -d > /root/.ssh/id_ed25519
+    chmod 600 /root/.ssh/id_ed25519
+    echo "[init] SSH-ключ установлен (из переменной окружения)"
+elif [ -f /tmp/ssh-key/id_ed25519 ]; then
     cp /tmp/ssh-key/id_ed25519 /root/.ssh/id_ed25519
     chmod 600 /root/.ssh/id_ed25519
-    echo "[init] SSH-ключ установлен"
+    echo "[init] SSH-ключ установлен (из volume)"
 fi
 
 # Configure git identity if not already set
