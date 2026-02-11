@@ -17,6 +17,11 @@ RUN cp -r /app/data /defaults-data && \
     mkdir -p /defaults-uploads && \
     cp -r /app/static/uploads /defaults-uploads/uploads
 
+# SSH config: accept new host keys automatically (for git push to GitHub)
+RUN mkdir -p /root/.ssh && \
+    echo "Host github.com\n  StrictHostKeyChecking accept-new" > /root/.ssh/config && \
+    chmod 600 /root/.ssh/config
+
 # Git safe directory (mounted volume)
 RUN git config --global --add safe.directory /app
 

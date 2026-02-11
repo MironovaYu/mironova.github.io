@@ -40,13 +40,6 @@ if [ -n "$GIT_REMOTE_URL" ]; then
     fi
 fi
 
-# Configure SSH: don't verify host keys on first connect
-mkdir -p /root/.ssh
-if [ ! -f /root/.ssh/config ]; then
-    echo "Host github.com" > /root/.ssh/config
-    echo "  StrictHostKeyChecking accept-new" >> /root/.ssh/config
-fi
-
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Сайт:    http://0.0.0.0:4343"
 echo "  Админка: http://0.0.0.0:4343/admin/"
