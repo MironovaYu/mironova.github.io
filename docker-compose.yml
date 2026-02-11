@@ -1,0 +1,18 @@
+services:
+  web:
+    build: .
+    container_name: mironova-site
+    restart: unless-stopped
+    ports:
+      - "4343:4343"
+    volumes:
+      # Монтируем весь проект — данные, статика и .git
+      - .:/app
+      # SSH-ключи для git push (read-only)
+      - ~/.ssh:/root/.ssh:ro
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-supersecretkey_change_me}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - GIT_USER_NAME=${GIT_USER_NAME:-Admin}
+      - GIT_USER_EMAIL=${GIT_USER_EMAIL:-admin@example.com}
+      - FLASK_ENV=production

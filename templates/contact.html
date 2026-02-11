@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Контакты — {{ site.name }}, {{ site.role|title }}{% endblock %}
+{% block description %}Свяжитесь с {{ site.name }}: Telegram, МАКС. Запись на консультацию, бесплатная предварительная беседа.{% endblock %}
+
+{% block content %}
+<!-- Contact Hero -->
+<section class="contact-hero section">
+    <div class="container">
+        <span class="section__label">{{ data.contact_page.label }}</span>
+        <h1>{{ data.contact_page.title }}</h1>
+        <p>{{ data.contact_page.subtitle }}</p>
+    </div>
+</section>
+
+<!-- Contact Cards -->
+<section class="section">
+    <div class="container">
+        <div class="contact-grid fade-in">
+            <div class="contact-card">
+                <div class="contact-card__icon">
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+                </div>
+                <h3>Telegram</h3>
+                <p>Основной способ связи. Напишите, и я отвечу в ближайшее время.</p>
+                <a href="{{ site.telegram_link }}" class="btn btn--telegram" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+                    Написать в Telegram
+                </a>
+            </div>
+
+            {% if site.maks_link %}
+            <div class="contact-card">
+                <div class="contact-card__icon">
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <h3>МАКС</h3>
+                <p>Запись на консультацию через платформу МАКС.</p>
+                <a href="{{ site.maks_link }}" class="btn btn--outline" target="_blank" rel="noopener">Записаться через МАКС</a>
+            </div>
+            {% endif %}
+
+            <div class="contact-card">
+                <div class="contact-card__icon">
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <h3>Формат встреч</h3>
+                <p>Очные сессии (предпочтительно) и онлайн-консультации по видеосвязи.</p>
+                <a href="{{ url_for('services') }}" class="btn btn--outline">Подробнее об услугах</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Как происходит запись -->
+<section class="section section--alt">
+    <div class="container">
+        <div class="section__header fade-in">
+            <span class="section__label">{{ data.contact_page.process.label }}</span>
+            <h2 class="section__title">{{ data.contact_page.process.title }}</h2>
+        </div>
+        <div class="process-steps fade-in">
+            {% for step in data.contact_page.process.steps %}
+            <div class="process-step">
+                <div class="process-step__num">{{ loop.index }}</div>
+                <h4>{{ step.title }}</h4>
+                <p>{{ step.text }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <div class="container fade-in">
+        <h2>{{ data.contact_page.cta.title }}</h2>
+        <p>{{ data.contact_page.cta.text }}</p>
+        <a href="{{ site.telegram_link }}" class="btn btn--telegram btn--lg" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+            {{ data.contact_page.cta.button_text }}
+        </a>
+    </div>
+</section>
+{% endblock %}

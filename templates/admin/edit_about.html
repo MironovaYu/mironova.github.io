@@ -1,0 +1,216 @@
+{% extends "admin/base.html" %}
+{% block title %}Обо мне — Админ-панель{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+    <div class="admin-page__header">
+        <h1>Страница «Обо мне»</h1>
+        <p>Информация о специалисте, подход, квалификация, принципы</p>
+    </div>
+
+    <form method="POST" class="admin-form" enctype="multipart/form-data">
+
+        <!-- ═══ Main Info ═══ -->
+        <div class="admin-form__section">
+            <h3>👤 Основная информация</h3>
+
+            <!-- About Photo -->
+            <div class="admin-field">
+                <label>Фото специалиста</label>
+                {% if content.about_page.image %}
+                <div class="admin-image-preview" id="aboutImageBlock">
+                    <img src="{{ url_for('static', filename=content.about_page.image) }}" alt="Фото" id="aboutPreviewImg">
+                    <div class="admin-image-preview__actions">
+                        <label class="admin-btn admin-btn--outline admin-btn--sm">
+                            Заменить
+                            <input type="file" name="about_image_file" accept="image/*" style="display:none" onchange="previewField(this, 'aboutPreviewImg', 'aboutRemoveImage')">
+                        </label>
+                        <button type="button" class="admin-btn admin-btn--danger admin-btn--sm" onclick="removeField('aboutImageBlock', 'aboutUploadZone', 'aboutRemoveImage')">Удалить</button>
+                        <input type="hidden" name="about_remove_image" id="aboutRemoveImage" value="0">
+                    </div>
+                </div>
+                <div class="admin-upload-zone" id="aboutUploadZone" style="display:none;">
+                    <p>Перетащите изображение или нажмите для выбора</p>
+                    <input type="file" name="about_image_file" accept="image/*" onchange="previewField(this, 'aboutNewPreviewImg', 'aboutRemoveImage')">
+                </div>
+                {% else %}
+                <div class="admin-upload-zone" id="aboutUploadZone">
+                    <p>Перетащите изображение или нажмите для выбора</p>
+                    <input type="file" name="about_image_file" accept="image/*" onchange="previewField(this, 'aboutNewPreviewImg', null)">
+                </div>
+                {% endif %}
+                <div id="aboutNewPreview" style="display:none;" class="admin-image-preview">
+                    <img id="aboutNewPreviewImg" src="" alt="Предпросмотр">
+                </div>
+            </div>
+
+            <div class="admin-field">
+                <label for="name">Имя</label>
+                <input type="text" id="name" name="name" value="{{ content.about_page.name }}">
+            </div>
+            <div class="admin-field">
+                <label for="role">Роль / Специализация</label>
+                <input type="text" id="role" name="role" value="{{ content.about_page.role }}">
+            </div>
+        </div>
+
+        <!-- ═══ Intro Paragraphs ═══ -->
+        <div class="admin-form__section">
+            <h3>📝 Вступительные параграфы</h3>
+            <div id="introParas">
+                {% for p in content.about_page.intro_paragraphs %}
+                <div class="admin-field admin-field--removable">
+                    <textarea name="intro_paragraph" rows="3">{{ p }}</textarea>
+                    <button type="button" class="admin-btn admin-btn--sm admin-btn--danger" onclick="this.parentElement.remove()">✕</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="admin-btn admin-btn--outline" onclick="addParagraph()">+ Добавить параграф</button>
+        </div>
+
+        <!-- ═══ Approach ═══ -->
+        <div class="admin-form__section">
+            <h3>🎯 Мой подход</h3>
+            <div class="admin-field">
+                <label for="approach_label">Метка</label>
+                <input type="text" id="approach_label" name="approach_label" value="{{ content.about_page.approach.label }}">
+            </div>
+            <div class="admin-field">
+                <label for="approach_title">Заголовок</label>
+                <input type="text" id="approach_title" name="approach_title" value="{{ content.about_page.approach.title }}">
+            </div>
+            <div class="admin-field">
+                <label for="approach_subtitle">Подзаголовок</label>
+                <textarea id="approach_subtitle" name="approach_subtitle" rows="2">{{ content.about_page.approach.subtitle }}</textarea>
+            </div>
+            {% for item in content.about_page.approach['items'] %}
+            <div class="admin-form__section admin-form__section--nested">
+                <h4>Пункт {{ item.num }}</h4>
+                <div class="admin-field">
+                    <label>Номер</label>
+                    <input type="text" name="approach_{{ loop.index0 }}_num" value="{{ item.num }}">
+                </div>
+                <div class="admin-field">
+                    <label>Заголовок</label>
+                    <input type="text" name="approach_{{ loop.index0 }}_title" value="{{ item.title }}">
+                </div>
+                <div class="admin-field">
+                    <label>Текст</label>
+                    <textarea name="approach_{{ loop.index0 }}_text" rows="3">{{ item.text }}</textarea>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ═══ Qualifications ═══ -->
+        <div class="admin-form__section">
+            <h3>🎓 Образование и опыт</h3>
+            <div class="admin-field">
+                <label for="quals_label">Метка</label>
+                <input type="text" id="quals_label" name="quals_label" value="{{ content.about_page.qualifications.label }}">
+            </div>
+            <div class="admin-field">
+                <label for="quals_title">Заголовок</label>
+                <input type="text" id="quals_title" name="quals_title" value="{{ content.about_page.qualifications.title }}">
+            </div>
+            {% for item in content.about_page.qualifications['items'] %}
+            <div class="admin-form__section admin-form__section--nested">
+                <h4>{{ item.title }}</h4>
+                <div class="admin-field">
+                    <label>Категория</label>
+                    <input type="text" name="qual_{{ loop.index0 }}_year" value="{{ item.year }}">
+                </div>
+                <div class="admin-field">
+                    <label>Название</label>
+                    <input type="text" name="qual_{{ loop.index0 }}_title" value="{{ item.title }}">
+                </div>
+                <div class="admin-field">
+                    <label>Описание</label>
+                    <textarea name="qual_{{ loop.index0 }}_desc" rows="2">{{ item.desc }}</textarea>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ═══ Principles ═══ -->
+        <div class="admin-form__section">
+            <h3>💎 Принципы работы</h3>
+            <div class="admin-field">
+                <label for="princ_label">Метка</label>
+                <input type="text" id="princ_label" name="princ_label" value="{{ content.about_page.principles.label }}">
+            </div>
+            <div class="admin-field">
+                <label for="princ_title">Заголовок</label>
+                <input type="text" id="princ_title" name="princ_title" value="{{ content.about_page.principles.title }}">
+            </div>
+            {% for item in content.about_page.principles['items'] %}
+            <div class="admin-form__section admin-form__section--nested">
+                <h4>{{ item.icon }} {{ item.title }}</h4>
+                <div class="admin-field">
+                    <label>Иконка (эмоджи)</label>
+                    <input type="text" name="princ_{{ loop.index0 }}_icon" value="{{ item.icon }}">
+                </div>
+                <div class="admin-field">
+                    <label>Название</label>
+                    <input type="text" name="princ_{{ loop.index0 }}_title" value="{{ item.title }}">
+                </div>
+                <div class="admin-field">
+                    <label>Текст</label>
+                    <textarea name="princ_{{ loop.index0 }}_text" rows="2">{{ item.text }}</textarea>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ═══ CTA ═══ -->
+        <div class="admin-form__section">
+            <h3>📢 CTA-секция</h3>
+            <div class="admin-field">
+                <label for="cta_title">Заголовок</label>
+                <input type="text" id="cta_title" name="cta_title" value="{{ content.about_page.cta.title }}">
+            </div>
+            <div class="admin-field">
+                <label for="cta_text">Текст</label>
+                <textarea id="cta_text" name="cta_text" rows="2">{{ content.about_page.cta.text }}</textarea>
+            </div>
+            <div class="admin-field">
+                <label for="cta_button_text">Текст кнопки</label>
+                <input type="text" id="cta_button_text" name="cta_button_text" value="{{ content.about_page.cta.button_text }}">
+            </div>
+        </div>
+
+        <button type="submit" class="admin-btn admin-btn--primary">Сохранить</button>
+    </form>
+</div>
+
+<script>
+function addParagraph() {
+    const container = document.getElementById('introParas');
+    const div = document.createElement('div');
+    div.className = 'admin-field admin-field--removable';
+    div.innerHTML = '<textarea name="intro_paragraph" rows="3" placeholder="Новый параграф..."></textarea><button type="button" class="admin-btn admin-btn--sm admin-btn--danger" onclick="this.parentElement.remove()">✕</button>';
+    container.appendChild(div);
+}
+
+function previewField(input, imgId, removeId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.getElementById(imgId);
+            img.src = e.target.result;
+            img.parentElement.style.display = '';
+        };
+        reader.readAsDataURL(input.files[0]);
+        if (removeId) {
+            document.getElementById(removeId).value = '0';
+        }
+    }
+}
+
+function removeField(blockId, zoneId, removeId) {
+    document.getElementById(blockId).style.display = 'none';
+    document.getElementById(zoneId).style.display = '';
+    document.getElementById(removeId).value = '1';
+}
+</script>
+{% endblock %}

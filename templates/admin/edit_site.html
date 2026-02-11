@@ -1,0 +1,48 @@
+{% extends "admin/base.html" %}
+{% block title %}Настройки сайта — Админ-панель{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+    <div class="admin-page__header">
+        <h1>Настройки сайта</h1>
+        <p>Основная информация о сайте</p>
+    </div>
+
+    <form method="POST" class="admin-form">
+        <div class="admin-form__section">
+            <h3>Общие данные</h3>
+            <div class="admin-field">
+                <label for="name">Имя</label>
+                <input type="text" id="name" name="name" value="{{ content.site.name }}">
+            </div>
+            <div class="admin-field">
+                <label for="role">Роль</label>
+                <input type="text" id="role" name="role" value="{{ content.site.role }}">
+            </div>
+            <div class="admin-field">
+                <label for="tagline">Слоган (подвал сайта)</label>
+                <input type="text" id="tagline" name="tagline" value="{{ content.site.tagline }}">
+            </div>
+            <div class="admin-field">
+                <label for="copyright_year">Год в копирайте</label>
+                <input type="text" id="copyright_year" name="copyright_year" value="{{ content.site.copyright_year }}">
+            </div>
+        </div>
+
+        <div class="admin-form__section">
+            <h3>Ссылки для связи</h3>
+            <div class="admin-field">
+                <label for="telegram_link">Telegram (ссылка)</label>
+                <input type="url" id="telegram_link" name="telegram_link" value="{{ content.site.telegram_link }}" placeholder="https://t.me/username">
+                <small>Основной способ связи. Используется во всех CTA-кнопках сайта.</small>
+            </div>
+            <div class="admin-field">
+                <label for="maks_link">МАКС (ссылка для записи)</label>
+                <input type="url" id="maks_link" name="maks_link" value="{{ content.site.maks_link }}" placeholder="https://...">
+                <small>Если пусто — кнопка МАКС не будет показана на сайте.</small>
+            </div>
+        </div>
+        <button type="submit" class="admin-btn admin-btn--primary">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

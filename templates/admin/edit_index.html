@@ -1,0 +1,278 @@
+{% extends "admin/base.html" %}
+{% block title %}Главная — Админ-панель{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+    <div class="admin-page__header">
+        <h1>Главная страница</h1>
+        <p>Все секции главной страницы: герой, запросы, превью, процесс, CTA</p>
+    </div>
+
+    <form method="POST" class="admin-form" enctype="multipart/form-data">
+
+        <!-- ═══ Hero ═══ -->
+        <div class="admin-form__section">
+            <h3>🌟 Героическая секция</h3>
+
+            <!-- Hero Image -->
+            <div class="admin-field">
+                <label>Фото героя</label>
+                {% if content.hero.image %}
+                <div class="admin-image-preview" id="heroImageBlock">
+                    <img src="{{ url_for('static', filename=content.hero.image) }}" alt="Фото героя" id="heroPreviewImg">
+                    <div class="admin-image-preview__actions">
+                        <label class="admin-btn admin-btn--outline admin-btn--sm">
+                            Заменить
+                            <input type="file" name="hero_image_file" accept="image/*" style="display:none" onchange="previewField(this, 'heroPreviewImg', 'heroRemoveImage')">
+                        </label>
+                        <button type="button" class="admin-btn admin-btn--danger admin-btn--sm" onclick="removeField('heroImageBlock', 'heroUploadZone', 'heroRemoveImage')">Удалить</button>
+                        <input type="hidden" name="hero_remove_image" id="heroRemoveImage" value="0">
+                    </div>
+                </div>
+                <div class="admin-upload-zone" id="heroUploadZone" style="display:none;">
+                    <p>Перетащите изображение или нажмите для выбора</p>
+                    <input type="file" name="hero_image_file" accept="image/*" onchange="previewField(this, 'heroNewPreviewImg', 'heroRemoveImage')">
+                </div>
+                {% else %}
+                <div class="admin-upload-zone" id="heroUploadZone">
+                    <p>Перетащите изображение или нажмите для выбора</p>
+                    <input type="file" name="hero_image_file" accept="image/*" onchange="previewField(this, 'heroNewPreviewImg', null)">
+                </div>
+                {% endif %}
+                <div id="heroNewPreview" style="display:none;" class="admin-image-preview">
+                    <img id="heroNewPreviewImg" src="" alt="Предпросмотр">
+                </div>
+            </div>
+
+            <div class="admin-field">
+                <label for="hero_label">Метка</label>
+                <input type="text" id="hero_label" name="hero_label" value="{{ content.hero.label }}">
+            </div>
+            <div class="admin-field">
+                <label for="hero_title">Заголовок (HTML допустим)</label>
+                <input type="text" id="hero_title" name="hero_title" value="{{ content.hero.title }}">
+            </div>
+            <div class="admin-field">
+                <label for="hero_text">Текст</label>
+                <textarea id="hero_text" name="hero_text" rows="3">{{ content.hero.text }}</textarea>
+            </div>
+            <div class="admin-field-row">
+                <div class="admin-field">
+                    <label for="hero_cta_text">Текст кнопки CTA</label>
+                    <input type="text" id="hero_cta_text" name="hero_cta_text" value="{{ content.hero.cta_text }}">
+                </div>
+                <div class="admin-field">
+                    <label for="hero_secondary_cta_text">Текст второй кнопки</label>
+                    <input type="text" id="hero_secondary_cta_text" name="hero_secondary_cta_text" value="{{ content.hero.secondary_cta_text }}">
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Help Section ═══ -->
+        <div class="admin-form__section">
+            <h3>🆘 С чем помогаю</h3>
+            <div class="admin-field">
+                <label for="help_label">Метка</label>
+                <input type="text" id="help_label" name="help_label" value="{{ content.help_section.label }}">
+            </div>
+            <div class="admin-field">
+                <label for="help_title">Заголовок</label>
+                <input type="text" id="help_title" name="help_title" value="{{ content.help_section.title }}">
+            </div>
+            <div id="helpItems">
+                {% for item in content.help_section['items'] %}
+                <div class="admin-field admin-field--removable">
+                    <textarea name="help_items" rows="2">{{ item }}</textarea>
+                    <button type="button" class="admin-btn admin-btn--sm admin-btn--danger" onclick="this.parentElement.remove()">✕</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="admin-btn admin-btn--outline" onclick="addHelpItem()">+ Добавить пункт</button>
+        </div>
+
+        <!-- ═══ About Preview ═══ -->
+        <div class="admin-form__section">
+            <h3>👤 Превью «Обо мне»</h3>
+
+            <!-- About Preview Image -->
+            <div class="admin-field">
+                <label>Фото «Обо мне»</label>
+                {% if content.about_preview.image %}
+                <div class="admin-image-preview" id="aboutPrevImageBlock">
+                    <img src="{{ url_for('static', filename=content.about_preview.image) }}" alt="Фото" id="aboutPrevPreviewImg">
+                    <div class="admin-image-preview__actions">
+                        <label class="admin-btn admin-btn--outline admin-btn--sm">
+                            Заменить
+                            <input type="file" name="about_preview_image_file" accept="image/*" style="display:none" onchange="previewField(this, 'aboutPrevPreviewImg', 'aboutPrevRemoveImage')">
+                        </label>
+                        <button type="button" class="admin-btn admin-btn--danger admin-btn--sm" onclick="removeField('aboutPrevImageBlock', 'aboutPrevUploadZone', 'aboutPrevRemoveImage')">Удалить</button>
+                        <input type="hidden" name="about_preview_remove_image" id="aboutPrevRemoveImage" value="0">
+                    </div>
+                </div>
+                <div class="admin-upload-zone" id="aboutPrevUploadZone" style="display:none;">
+                    <p>Перетащите изображение или нажмите для выбора</p>
+                    <input type="file" name="about_preview_image_file" accept="image/*" onchange="previewField(this, 'aboutPrevNewPreviewImg', 'aboutPrevRemoveImage')">
+                </div>
+                {% else %}
+                <div class="admin-upload-zone" id="aboutPrevUploadZone">
+                    <p>Перетащите изображение или нажмите для выбора</p>
+                    <input type="file" name="about_preview_image_file" accept="image/*" onchange="previewField(this, 'aboutPrevNewPreviewImg', null)">
+                </div>
+                {% endif %}
+                <div id="aboutPrevNewPreview" style="display:none;" class="admin-image-preview">
+                    <img id="aboutPrevNewPreviewImg" src="" alt="Предпросмотр">
+                </div>
+            </div>
+
+            <div class="admin-field">
+                <label for="about_preview_label">Метка</label>
+                <input type="text" id="about_preview_label" name="about_preview_label" value="{{ content.about_preview.label }}">
+            </div>
+            <div class="admin-field">
+                <label for="about_preview_title">Заголовок</label>
+                <input type="text" id="about_preview_title" name="about_preview_title" value="{{ content.about_preview.title }}">
+            </div>
+            <div id="aboutPreviewParas">
+                {% for p in content.about_preview.paragraphs %}
+                <div class="admin-field admin-field--removable">
+                    <textarea name="about_preview_paragraph" rows="3">{{ p }}</textarea>
+                    <button type="button" class="admin-btn admin-btn--sm admin-btn--danger" onclick="this.parentElement.remove()">✕</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="admin-btn admin-btn--outline" onclick="addAboutPreviewPara()">+ Добавить параграф</button>
+            <div class="admin-field" style="margin-top: 1rem;">
+                <label for="about_preview_cta_text">Текст кнопки</label>
+                <input type="text" id="about_preview_cta_text" name="about_preview_cta_text" value="{{ content.about_preview.cta_text }}">
+            </div>
+        </div>
+
+        <!-- ═══ Services Preview ═══ -->
+        <div class="admin-form__section">
+            <h3>📋 Превью услуг</h3>
+            <div class="admin-field">
+                <label for="services_preview_label">Метка</label>
+                <input type="text" id="services_preview_label" name="services_preview_label" value="{{ content.services_preview.label }}">
+            </div>
+            <div class="admin-field">
+                <label for="services_preview_title">Заголовок</label>
+                <input type="text" id="services_preview_title" name="services_preview_title" value="{{ content.services_preview.title }}">
+            </div>
+            <div class="admin-field">
+                <label for="services_preview_subtitle">Подзаголовок</label>
+                <textarea id="services_preview_subtitle" name="services_preview_subtitle" rows="2">{{ content.services_preview.subtitle }}</textarea>
+            </div>
+            <div class="admin-field">
+                <label for="services_preview_cta_text">Текст кнопки</label>
+                <input type="text" id="services_preview_cta_text" name="services_preview_cta_text" value="{{ content.services_preview.cta_text }}">
+            </div>
+
+            {% for item in content.services_preview['items'] %}
+            <div class="admin-form__section admin-form__section--nested">
+                <h4>{{ item.icon }} {{ item.title }}</h4>
+                <div class="admin-field">
+                    <label>Иконка (эмоджи)</label>
+                    <input type="text" name="sp_{{ loop.index0 }}_icon" value="{{ item.icon }}">
+                </div>
+                <div class="admin-field">
+                    <label>Название</label>
+                    <input type="text" name="sp_{{ loop.index0 }}_title" value="{{ item.title }}">
+                </div>
+                <div class="admin-field">
+                    <label>Описание</label>
+                    <textarea name="sp_{{ loop.index0 }}_text" rows="2">{{ item.text }}</textarea>
+                </div>
+                <div class="admin-field">
+                    <label>Цена</label>
+                    <input type="text" name="sp_{{ loop.index0 }}_price" value="{{ item.price }}">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ═══ Process Steps ═══ -->
+        <div class="admin-form__section">
+            <h3>🔄 Как начать работу</h3>
+            <div class="admin-field">
+                <label for="process_label">Метка</label>
+                <input type="text" id="process_label" name="process_label" value="{{ content.process_steps.label }}">
+            </div>
+            <div class="admin-field">
+                <label for="process_title">Заголовок</label>
+                <input type="text" id="process_title" name="process_title" value="{{ content.process_steps.title }}">
+            </div>
+            {% for step in content.process_steps.steps %}
+            <div class="admin-form__section admin-form__section--nested">
+                <h4>Шаг {{ loop.index }}</h4>
+                <div class="admin-field">
+                    <label>Заголовок шага</label>
+                    <input type="text" name="process_step_{{ loop.index0 }}_title" value="{{ step.title }}">
+                </div>
+                <div class="admin-field">
+                    <label>Описание шага</label>
+                    <textarea name="process_step_{{ loop.index0 }}_text" rows="2">{{ step.text }}</textarea>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ═══ CTA ═══ -->
+        <div class="admin-form__section">
+            <h3>📢 CTA-секция (нижний призыв к действию)</h3>
+            <div class="admin-field">
+                <label for="cta_title">Заголовок</label>
+                <input type="text" id="cta_title" name="cta_title" value="{{ content.cta.title }}">
+            </div>
+            <div class="admin-field">
+                <label for="cta_text">Текст</label>
+                <textarea id="cta_text" name="cta_text" rows="2">{{ content.cta.text }}</textarea>
+            </div>
+            <div class="admin-field">
+                <label for="cta_button_text">Текст кнопки</label>
+                <input type="text" id="cta_button_text" name="cta_button_text" value="{{ content.cta.button_text }}">
+            </div>
+        </div>
+
+        <button type="submit" class="admin-btn admin-btn--primary">Сохранить всё</button>
+    </form>
+</div>
+
+<script>
+function addHelpItem() {
+    const container = document.getElementById('helpItems');
+    const div = document.createElement('div');
+    div.className = 'admin-field admin-field--removable';
+    div.innerHTML = '<textarea name="help_items" rows="2" placeholder="Новый пункт..."></textarea><button type="button" class="admin-btn admin-btn--sm admin-btn--danger" onclick="this.parentElement.remove()">✕</button>';
+    container.appendChild(div);
+}
+
+function addAboutPreviewPara() {
+    const container = document.getElementById('aboutPreviewParas');
+    const div = document.createElement('div');
+    div.className = 'admin-field admin-field--removable';
+    div.innerHTML = '<textarea name="about_preview_paragraph" rows="3" placeholder="Новый параграф..."></textarea><button type="button" class="admin-btn admin-btn--sm admin-btn--danger" onclick="this.parentElement.remove()">✕</button>';
+    container.appendChild(div);
+}
+
+function previewField(input, imgId, removeId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.getElementById(imgId);
+            img.src = e.target.result;
+            img.parentElement.style.display = '';
+        };
+        reader.readAsDataURL(input.files[0]);
+        if (removeId) {
+            document.getElementById(removeId).value = '0';
+        }
+    }
+}
+
+function removeField(blockId, zoneId, removeId) {
+    document.getElementById(blockId).style.display = 'none';
+    document.getElementById(zoneId).style.display = '';
+    document.getElementById(removeId).value = '1';
+}
+</script>
+{% endblock %}

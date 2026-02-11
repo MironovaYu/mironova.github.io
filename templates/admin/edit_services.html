@@ -1,0 +1,120 @@
+{% extends "admin/base.html" %}
+{% block title %}Услуги — Админ-панель{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+    <div class="admin-page__header">
+        <h1>Страница «Услуги»</h1>
+        <p>Детальное описание услуг, цены и CTA</p>
+    </div>
+
+    <form method="POST" class="admin-form">
+
+        <!-- ═══ Page Header ═══ -->
+        <div class="admin-form__section">
+            <h3>📋 Заголовок страницы</h3>
+            <div class="admin-field">
+                <label for="page_label">Метка</label>
+                <input type="text" id="page_label" name="page_label" value="{{ content.services_page.label }}">
+            </div>
+            <div class="admin-field">
+                <label for="page_title">Заголовок</label>
+                <input type="text" id="page_title" name="page_title" value="{{ content.services_page.title }}">
+            </div>
+            <div class="admin-field">
+                <label for="page_subtitle">Подзаголовок</label>
+                <textarea id="page_subtitle" name="page_subtitle" rows="2">{{ content.services_page.subtitle }}</textarea>
+            </div>
+        </div>
+
+        <!-- ═══ Services ═══ -->
+        {% for svc in content.services_page.services %}
+        {% set svc_idx = loop.index0 %}
+        <div class="admin-form__section">
+            <h3>🔹 {{ svc.title }}</h3>
+            <div class="admin-field">
+                <label>Название</label>
+                <input type="text" name="svc_{{ svc_idx }}_title" value="{{ svc.title }}">
+            </div>
+            <div class="admin-field">
+                <label>Подзаголовок</label>
+                <input type="text" name="svc_{{ svc_idx }}_desc" value="{{ svc.desc }}">
+            </div>
+
+            <h4>Цены</h4>
+            {% for price in svc.prices %}
+            <div class="admin-field-row">
+                <input type="text" name="svc_{{ svc_idx }}_price_label" value="{{ price.label }}" placeholder="Метка">
+                <input type="text" name="svc_{{ svc_idx }}_price_value" value="{{ price.value }}" placeholder="Цена">
+            </div>
+            {% endfor %}
+
+            <h4>Описание (параграфы)</h4>
+            <div id="svcParas_{{ svc_idx }}">
+                {% for p in svc.paragraphs %}
+                <div class="admin-field admin-field--removable">
+                    <textarea name="svc_{{ svc_idx }}_paragraph" rows="3">{{ p }}</textarea>
+                    <button type="button" class="admin-btn admin-btn--sm admin-btn--danger" onclick="this.parentElement.remove()">✕</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="admin-btn admin-btn--outline" onclick="addSvcPara({{ svc_idx }})">+ Параграф</button>
+
+            {% if svc.list_title is defined or svc.list_items is defined %}
+            <h4 style="margin-top: 1rem;">Список</h4>
+            <div class="admin-field">
+                <label>Заголовок списка</label>
+                <input type="text" name="svc_{{ svc_idx }}_list_title" value="{{ svc.list_title|default('', true) }}">
+            </div>
+            <div id="svcList_{{ svc_idx }}">
+                {% for li in svc.get('list_items', []) %}
+                <div class="admin-field admin-field--removable">
+                    <input type="text" name="svc_{{ svc_idx }}_list_item" value="{{ li }}">
+                    <button type="button" class="admin-btn admin-btn--sm admin-btn--danger" onclick="this.parentElement.remove()">✕</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="admin-btn admin-btn--outline" onclick="addSvcListItem({{ svc_idx }})">+ Пункт списка</button>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <!-- ═══ CTA ═══ -->
+        <div class="admin-form__section">
+            <h3>📢 CTA-секция</h3>
+            <div class="admin-field">
+                <label for="cta_title">Заголовок</label>
+                <input type="text" id="cta_title" name="cta_title" value="{{ content.services_page.cta.title }}">
+            </div>
+            <div class="admin-field">
+                <label for="cta_text">Текст</label>
+                <textarea id="cta_text" name="cta_text" rows="2">{{ content.services_page.cta.text }}</textarea>
+            </div>
+            <div class="admin-field">
+                <label for="cta_button_text">Текст кнопки</label>
+                <input type="text" id="cta_button_text" name="cta_button_text" value="{{ content.services_page.cta.button_text }}">
+            </div>
+        </div>
+
+        <button type="submit" class="admin-btn admin-btn--primary">Сохранить</button>
+    </form>
+</div>
+
+<script>
+function addSvcPara(idx) {
+    const container = document.getElementById('svcParas_' + idx);
+    const div = document.createElement('div');
+    div.className = 'admin-field admin-field--removable';
+    div.innerHTML = '<textarea name="svc_' + idx + '_paragraph" rows="3" placeholder="Новый параграф..."></textarea><button type="button" class="admin-btn admin-btn--sm admin-btn--danger" onclick="this.parentElement.remove()">✕</button>';
+    container.appendChild(div);
+}
+
+function addSvcListItem(idx) {
+    const container = document.getElementById('svcList_' + idx);
+    const div = document.createElement('div');
+    div.className = 'admin-field admin-field--removable';
+    div.innerHTML = '<input type="text" name="svc_' + idx + '_list_item" placeholder="Новый пункт..."><button type="button" class="admin-btn admin-btn--sm admin-btn--danger" onclick="this.parentElement.remove()">✕</button>';
+    container.appendChild(div);
+}
+</script>
+{% endblock %}

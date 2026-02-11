@@ -1,0 +1,117 @@
+{% extends "admin/base.html" %}
+{% block title %}Обзор — Админ-панель{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+    <div class="admin-page__header">
+        <div class="admin-page__header-row">
+            <div>
+                <h1>Обзор</h1>
+                <p>Управление содержимым сайта</p>
+            </div>
+            <button id="deployBtn" class="admin-btn admin-btn--primary" onclick="startDeploy()">
+                🚀 Опубликовать
+            </button>
+        </div>
+    </div>
+
+    <!-- Deploy Status -->
+    <div id="deployPanel" class="admin-deploy" style="display:none;">
+        <div class="admin-deploy__header">
+            <span id="deployTitle">Публикация...</span>
+            <button class="admin-btn admin-btn--sm admin-btn--outline" onclick="document.getElementById('deployPanel').style.display='none'">✕</button>
+        </div>
+        <pre id="deployLog" class="admin-deploy__log"></pre>
+    </div>
+
+    <div class="admin-cards">
+        <a href="{{ url_for('admin_site') }}" class="admin-card">
+            <div class="admin-card__icon">⚙</div>
+            <h3>Настройки</h3>
+            <p>Имя, роль, слоган, ссылки</p>
+        </a>
+        <a href="{{ url_for('admin_index') }}" class="admin-card">
+            <div class="admin-card__icon">⭐</div>
+            <h3>Главная</h3>
+            <p>Герой, запросы, превью секций, CTA</p>
+        </a>
+        <a href="{{ url_for('admin_about') }}" class="admin-card">
+            <div class="admin-card__icon">👤</div>
+            <h3>Обо мне</h3>
+            <p>Подход, квалификация, принципы</p>
+        </a>
+        <a href="{{ url_for('admin_services') }}" class="admin-card">
+            <div class="admin-card__icon">📋</div>
+            <h3>Услуги</h3>
+            <p>{{ content.services_page.services|length }} услуг</p>
+        </a>
+        <a href="{{ url_for('admin_contact') }}" class="admin-card">
+            <div class="admin-card__icon">💬</div>
+            <h3>Контакты</h3>
+            <p>Telegram, запись, процесс</p>
+        </a>
+        <a href="{{ url_for('admin_articles') }}" class="admin-card">
+            <div class="admin-card__icon">📝</div>
+            <h3>Статьи</h3>
+            <p>{{ articles|length }} статей</p>
+        </a>
+    </div>
+</div>
+
+<script>
+function startDeploy() {
+    const btn = document.getElementById('deployBtn');
+    const panel = document.getElementById('deployPanel');
+    const log = document.getElementById('deployLog');
+    const title = document.getElementById('deployTitle');
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Публикация...';
+    panel.style.display = 'block';
+    log.textContent = '';
+    title.textContent = 'Публикация...';
+
+    fetch('{{ url_for("admin_deploy") }}', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (!data.ok) {
+                log.textContent = data.error;
+                btn.disabled = false;
+                btn.textContent = '🚀 Опубликовать';
+                return;
+            }
+            pollStatus();
+        })
+        .catch(err => {
+            log.textContent = 'Ошибка: ' + err;
+            btn.disabled = false;
+            btn.textContent = '🚀 Опубликовать';
+        });
+}
+
+function pollStatus() {
+    const btn = document.getElementById('deployBtn');
+    const log = document.getElementById('deployLog');
+    const title = document.getElementById('deployTitle');
+
+    fetch('{{ url_for("admin_deploy_status") }}')
+        .then(r => r.json())
+        .then(data => {
+            log.textContent = data.log.join('\n');
+            log.scrollTop = log.scrollHeight;
+            if (data.running) {
+                setTimeout(pollStatus, 1000);
+            } else {
+                btn.disabled = false;
+                btn.textContent = '🚀 Опубликовать';
+                if (data.result === 'success') {
+                    title.textContent = '✅ Опубликовано';
+                } else {
+                    title.textContent = '❌ Ошибка публикации';
+                }
+            }
+        })
+        .catch(() => setTimeout(pollStatus, 2000));
+}
+</script>
+{% endblock %}

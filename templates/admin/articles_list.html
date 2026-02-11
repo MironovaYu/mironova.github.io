@@ -1,0 +1,77 @@
+{% extends "admin/base.html" %}
+{% block title %}Статьи — Админ-панель{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+    <div class="admin-page__header">
+        <div class="admin-page__header-row">
+            <div>
+                <h1>Статьи</h1>
+                <p>{{ articles|length }} статей</p>
+            </div>
+            <a href="{{ url_for('admin_article_new') }}" class="admin-btn admin-btn--primary">+ Новая статья</a>
+        </div>
+    </div>
+
+    {% if articles %}
+    <div class="admin-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Slug</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for art in articles %}
+                <tr>
+                    <td><strong>{{ art.title }}</strong></td>
+                    <td><code>{{ art.slug }}</code></td>
+                    <td>
+                        {% if art.published %}
+                        <span class="admin-badge admin-badge--success">Опубликована</span>
+                        {% else %}
+                        <span class="admin-badge admin-badge--draft">Черновик</span>
+                        {% endif %}
+                    </td>
+                    <td class="admin-table__actions">
+                        <a href="{{ url_for('admin_article_edit', slug=art.slug) }}" class="admin-btn admin-btn--sm">Редактировать</a>
+                        <form method="POST" action="{{ url_for('admin_article_delete', slug=art.slug) }}" style="display:inline" onsubmit="return confirm('Удалить статью?')">
+                            <button type="submit" class="admin-btn admin-btn--sm admin-btn--danger">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="admin-empty">
+        <p>Статей пока нет.</p>
+        <a href="{{ url_for('admin_article_new') }}" class="admin-btn admin-btn--primary">Создать первую статью</a>
+    </div>
+    {% endif %}
+
+    <!-- ═══ Articles CTA ═══ -->
+    <form method="POST" class="admin-form" style="margin-top: 2rem;">
+        <div class="admin-form__section">
+            <h3>📢 CTA-секция на странице статей</h3>
+            <div class="admin-field">
+                <label for="cta_title">Заголовок</label>
+                <input type="text" id="cta_title" name="cta_title" value="{{ content.articles_cta.title }}">
+            </div>
+            <div class="admin-field">
+                <label for="cta_text">Текст</label>
+                <textarea id="cta_text" name="cta_text" rows="2">{{ content.articles_cta.text }}</textarea>
+            </div>
+            <div class="admin-field">
+                <label for="cta_button_text">Текст кнопки</label>
+                <input type="text" id="cta_button_text" name="cta_button_text" value="{{ content.articles_cta.button_text }}">
+            </div>
+        </div>
+        <button type="submit" class="admin-btn admin-btn--primary">Сохранить CTA</button>
+    </form>
+</div>
+{% endblock %}

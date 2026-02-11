@@ -1,0 +1,116 @@
+{% extends "admin/base.html" %}
+{% block title %}Документы — Админ-панель{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+    <div class="admin-page__header">
+        <h1>Документы и сертификаты</h1>
+        <p>Управление сканами документов об образовании и квалификации</p>
+    </div>
+
+    <form method="POST" class="admin-form" enctype="multipart/form-data">
+
+        <!-- ═══ Page Settings ═══ -->
+        <div class="admin-form__section">
+            <h3>⚙️ Настройки страницы</h3>
+            <div class="admin-field">
+                <label for="title">Заголовок страницы</label>
+                <input type="text" id="title" name="title" value="{{ content.documents_page.title }}">
+            </div>
+            <div class="admin-field">
+                <label for="subtitle">Подзаголовок</label>
+                <textarea id="subtitle" name="subtitle" rows="2">{{ content.documents_page.subtitle }}</textarea>
+            </div>
+            <div class="admin-field">
+                <label for="button_text">Текст кнопки (на странице «Обо мне»)</label>
+                <input type="text" id="button_text" name="button_text" value="{{ content.documents_page.button_text }}">
+            </div>
+        </div>
+
+        <!-- ═══ Existing Documents ═══ -->
+        {% if content.documents_page.docs %}
+        <div class="admin-form__section">
+            <h3>📄 Загруженные документы</h3>
+            <p style="color: var(--admin-text-muted); font-size: 0.875rem; margin-bottom: 1rem;">Нажмите «Удалить» чтобы убрать документ. Изменения применятся после сохранения.</p>
+            <div id="docsList">
+                {% for doc in content.documents_page.docs %}
+                <div class="admin-doc-item" id="docItem{{ loop.index0 }}" data-id="{{ loop.index0 }}">
+                    <input type="hidden" name="doc_id" value="{{ loop.index0 }}">
+                    <div class="admin-doc-item__preview">
+                        <img src="{{ url_for('static', filename=doc.image) }}" alt="{{ doc.title }}">
+                    </div>
+                    <div class="admin-doc-item__info">
+                        <input type="text" name="doc_title" value="{{ doc.title }}" placeholder="Название документа (необязательно)">
+                        <div class="admin-doc-item__actions">
+                            <a href="{{ url_for('static', filename=doc.image) }}" target="_blank" class="admin-btn admin-btn--outline admin-btn--sm">Открыть</a>
+                            <button type="button" class="admin-btn admin-btn--danger admin-btn--sm" onclick="markDelete({{ loop.index0 }})">Удалить</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div id="deleteInputs"></div>
+        </div>
+        {% endif %}
+
+        <!-- ═══ Add New Documents ═══ -->
+        <div class="admin-form__section">
+            <h3>📎 Добавить документы</h3>
+            <div id="newDocs">
+                <div class="admin-doc-new">
+                    <div class="admin-upload-zone">
+                        <p>Перетащите изображение или нажмите для выбора</p>
+                        <input type="file" name="new_files" accept="image/*" onchange="onNewFile(this)">
+                    </div>
+                    <input type="text" name="new_file_title" placeholder="Название (необязательно)" style="margin-top: 0.5rem;">
+                </div>
+            </div>
+            <button type="button" class="admin-btn admin-btn--outline" onclick="addNewSlot()" style="margin-top: 0.75rem;">+ Ещё документ</button>
+        </div>
+
+        <button type="submit" class="admin-btn admin-btn--primary">Сохранить</button>
+    </form>
+</div>
+
+<script>
+function markDelete(id) {
+    const item = document.getElementById('docItem' + id);
+    if (item) {
+        item.style.opacity = '0.3';
+        item.style.pointerEvents = 'none';
+        // Remove the hidden doc_id so it won't be sent
+        const hidden = item.querySelector('input[name="doc_id"]');
+        if (hidden) hidden.remove();
+        // Add delete marker
+        const container = document.getElementById('deleteInputs');
+        const inp = document.createElement('input');
+        inp.type = 'hidden';
+        inp.name = 'delete_doc';
+        inp.value = id;
+        container.appendChild(inp);
+    }
+}
+
+function addNewSlot() {
+    const container = document.getElementById('newDocs');
+    const div = document.createElement('div');
+    div.className = 'admin-doc-new';
+    div.innerHTML = `
+        <div class="admin-upload-zone">
+            <p>Перетащите изображение или нажмите для выбора</p>
+            <input type="file" name="new_files" accept="image/*" onchange="onNewFile(this)">
+        </div>
+        <input type="text" name="new_file_title" placeholder="Название (необязательно)" style="margin-top: 0.5rem;">
+    `;
+    container.appendChild(div);
+}
+
+function onNewFile(input) {
+    if (input.files && input.files[0]) {
+        const zone = input.closest('.admin-upload-zone');
+        const p = zone.querySelector('p');
+        if (p) p.textContent = input.files[0].name;
+    }
+}
+</script>
+{% endblock %}

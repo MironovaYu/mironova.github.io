@@ -1,0 +1,76 @@
+{% extends "admin/base.html" %}
+{% block title %}Контакты — Админ-панель{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+    <div class="admin-page__header">
+        <h1>Страница «Контакты»</h1>
+        <p>Заголовок, описание, процесс записи и CTA</p>
+    </div>
+
+    <form method="POST" class="admin-form">
+
+        <!-- ═══ Page Header ═══ -->
+        <div class="admin-form__section">
+            <h3>💬 Заголовок страницы</h3>
+            <div class="admin-field">
+                <label for="label">Метка</label>
+                <input type="text" id="label" name="label" value="{{ content.contact_page.label }}">
+            </div>
+            <div class="admin-field">
+                <label for="title">Заголовок</label>
+                <input type="text" id="title" name="title" value="{{ content.contact_page.title }}">
+            </div>
+            <div class="admin-field">
+                <label for="subtitle">Подзаголовок</label>
+                <textarea id="subtitle" name="subtitle" rows="3">{{ content.contact_page.subtitle }}</textarea>
+            </div>
+        </div>
+
+        <!-- ═══ Process ═══ -->
+        <div class="admin-form__section">
+            <h3>📋 Процесс записи</h3>
+            <div class="admin-field">
+                <label for="process_label">Метка секции</label>
+                <input type="text" id="process_label" name="process_label" value="{{ content.contact_page.process.label }}">
+            </div>
+            <div class="admin-field">
+                <label for="process_title">Заголовок секции</label>
+                <input type="text" id="process_title" name="process_title" value="{{ content.contact_page.process.title }}">
+            </div>
+            {% for step in content.contact_page.process.steps %}
+            <div class="admin-form__section admin-form__section--nested">
+                <h4>Шаг {{ loop.index }}</h4>
+                <div class="admin-field">
+                    <label>Заголовок</label>
+                    <input type="text" name="step_{{ loop.index0 }}_title" value="{{ step.title }}">
+                </div>
+                <div class="admin-field">
+                    <label>Описание</label>
+                    <textarea name="step_{{ loop.index0 }}_text" rows="2">{{ step.text }}</textarea>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ═══ CTA ═══ -->
+        <div class="admin-form__section">
+            <h3>📢 CTA-секция</h3>
+            <div class="admin-field">
+                <label for="cta_title">Заголовок</label>
+                <input type="text" id="cta_title" name="cta_title" value="{{ content.contact_page.cta.title }}">
+            </div>
+            <div class="admin-field">
+                <label for="cta_text">Текст</label>
+                <textarea id="cta_text" name="cta_text" rows="2">{{ content.contact_page.cta.text }}</textarea>
+            </div>
+            <div class="admin-field">
+                <label for="cta_button_text">Текст кнопки</label>
+                <input type="text" id="cta_button_text" name="cta_button_text" value="{{ content.contact_page.cta.button_text }}">
+            </div>
+        </div>
+
+        <button type="submit" class="admin-btn admin-btn--primary">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

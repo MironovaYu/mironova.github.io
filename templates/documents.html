@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{{ data.documents_page.title }} — {{ site.name }}, {{ site.role|title }}{% endblock %}
+{% block description %}{{ data.documents_page.subtitle }}{% endblock %}
+
+{% block content %}
+<!-- Documents Header -->
+<section class="section">
+    <div class="container">
+        <div class="section__header fade-in">
+            <a href="{{ url_for('about') }}" class="article-page__back" style="margin-bottom: 1.5rem;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Обо мне
+            </a>
+            <h1 class="section__title">{{ data.documents_page.title }}</h1>
+            <p class="section__subtitle">{{ data.documents_page.subtitle }}</p>
+        </div>
+    </div>
+</section>
+
+<!-- Documents Gallery -->
+<section class="section" style="padding-top: 0;">
+    <div class="container">
+        {% if data.documents_page.docs %}
+        <div class="documents-grid fade-in">
+            {% for doc in data.documents_page.docs %}
+            <a href="{{ url_for('static', filename=doc.image) }}" class="document-card" target="_blank" rel="noopener">
+                <div class="document-card__image">
+                    <img src="{{ url_for('static', filename=doc.image) }}" alt="{{ doc.title }}" loading="lazy">
+                </div>
+                {% if doc.title %}
+                <div class="document-card__title">{{ doc.title }}</div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="articles-empty fade-in">
+            <p>Документы пока не добавлены</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

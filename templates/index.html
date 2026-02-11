@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site.name }} — {{ site.role|title }} | Телесно-ориентированная терапия{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+    <div class="hero__decor hero__decor--1"></div>
+    <div class="hero__decor hero__decor--2"></div>
+    <div class="container">
+        <div class="hero__inner">
+            <div class="hero__content">
+                <span class="hero__label">{{ data.hero.label }}</span>
+                <h1 class="hero__title">{{ data.hero.title|safe }}</h1>
+                <p class="hero__text">{{ data.hero.text|safe }}</p>
+                <div class="hero__actions">
+                    <a href="{{ site.telegram_link }}" class="btn btn--telegram btn--lg" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+                        {{ data.hero.cta_text }}
+                    </a>
+                    <a href="{{ url_for('services') }}" class="btn btn--outline btn--lg">{{ data.hero.secondary_cta_text }}</a>
+                </div>
+            </div>
+            <div class="hero__image">
+                <div class="hero__image-wrapper">
+                    {% if data.hero.image %}
+                    <img src="{{ url_for('static', filename=data.hero.image) }}" alt="Фото {{ site.name }}" class="hero__photo">
+                    {% else %}
+                    <div class="placeholder-img">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+                        <span>Фото</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- С чем я помогаю -->
+<section class="section" id="help">
+    <div class="container">
+        <div class="section__header fade-in">
+            <span class="section__label">{{ data.help_section.label }}</span>
+            <h2 class="section__title">{{ data.help_section.title }}</h2>
+        </div>
+        <div class="help-list">
+            {% for item in data.help_section['items'] %}
+            <div class="help-item fade-in">
+                <div class="help-item__icon">✦</div>
+                <p class="help-item__text">{{ item }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Обо мне (превью) -->
+<section class="section section--alt">
+    <div class="container">
+        <div class="about-preview fade-in">
+            <div class="about-preview__image">
+                {% if data.about_preview.image %}
+                <img src="{{ url_for('static', filename=data.about_preview.image) }}" alt="{{ site.name }}" style="width:100%; height:100%; object-fit:cover; border-radius:var(--radius-md);">
+                {% else %}
+                <div class="placeholder-img">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+                    <span>Фото</span>
+                </div>
+                {% endif %}
+            </div>
+            <div class="about-preview__content">
+                <span class="section__label">{{ data.about_preview.label }}</span>
+                <h2>{{ data.about_preview.title }}</h2>
+                {% for p in data.about_preview.paragraphs %}
+                <p>{{ p }}</p>
+                {% endfor %}
+                <a href="{{ url_for('about') }}" class="btn btn--outline">{{ data.about_preview.cta_text }}</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Услуги (превью) -->
+<section class="section">
+    <div class="container">
+        <div class="section__header fade-in">
+            <span class="section__label">{{ data.services_preview.label }}</span>
+            <h2 class="section__title">{{ data.services_preview.title }}</h2>
+            <p class="section__subtitle">{{ data.services_preview.subtitle }}</p>
+        </div>
+        <div class="cards-grid">
+            {% for item in data.services_preview['items'] %}
+            <div class="card fade-in">
+                <div class="card__icon">{{ item.icon }}</div>
+                <h3 class="card__title">{{ item.title }}</h3>
+                <p class="card__text">{{ item.text }}</p>
+                <div class="card__price">{{ item.price }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="text-align: center; margin-top: 2.5rem;" class="fade-in">
+            <a href="{{ url_for('services') }}" class="btn btn--primary">{{ data.services_preview.cta_text }}</a>
+        </div>
+    </div>
+</section>
+
+<!-- Как начать -->
+<section class="section section--alt">
+    <div class="container">
+        <div class="section__header fade-in">
+            <span class="section__label">{{ data.process_steps.label }}</span>
+            <h2 class="section__title">{{ data.process_steps.title }}</h2>
+        </div>
+        <div class="process-steps fade-in">
+            {% for step in data.process_steps.steps %}
+            <div class="process-step">
+                <div class="process-step__num">{{ loop.index }}</div>
+                <h4>{{ step.title }}</h4>
+                <p>{{ step.text }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <div class="container fade-in">
+        <h2>{{ data.cta.title }}</h2>
+        <p>{{ data.cta.text }}</p>
+        <a href="{{ site.telegram_link }}" class="btn btn--telegram btn--lg" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+            {{ data.cta.button_text }}
+        </a>
+    </div>
+</section>
+{% endblock %}
