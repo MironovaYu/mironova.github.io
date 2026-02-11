@@ -12,6 +12,11 @@ RUN pip install --no-cache-dir -r requirements.txt gunicorn
 COPY . .
 RUN chmod +x /app/docker-entrypoint.sh
 
+# Save default data & uploads so entrypoint can seed empty volumes
+RUN cp -r /app/data /defaults-data && \
+    mkdir -p /defaults-uploads && \
+    cp -r /app/static/uploads /defaults-uploads/uploads
+
 # Git safe directory (mounted volume)
 RUN git config --global --add safe.directory /app
 
