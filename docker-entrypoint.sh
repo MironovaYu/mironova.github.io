@@ -22,11 +22,21 @@ if [ -n "$GIT_USER_EMAIL" ]; then
 fi
 
 # Override git remote URL if provided (for SSH push from Portainer)
-if [ -n "$GIT_REMOTE_URL" ] && [ -d /app/.git ]; then
-    current_remote=$(git -C /app remote get-url origin 2>/dev/null || echo "")
-    if [ "$current_remote" != "$GIT_REMOTE_URL" ]; then
+if [ -n "$GIT_REMOTE_URL" ]; then
+    if git -C /app rev-parse --git-dir >/dev/null 2>&1; then
+        # .git есть и это настоящий репозиторий
+        current_remote=$(git -C /app remote get-url origin 2>/dev/null || echo "")
+        if [ "$current_remote" != "$GIT_REMOTE_URL" ]; then
+            echo "[init] Git remote origin → $GIT_REMOTE_URL"
+            git -C /app remote set-url origin "$GIT_REMOTE_URL" 2>/dev/null || true
+        fi
+    else
+        # .git отсутствует или повреждён — создаём новый
+        echo "[init] Инициализация git-репозитория..."
+        git init /app 2>/dev/null || true
+        git -C /app remote add origin "$GIT_REMOTE_URL" 2>/dev/null || \
+            git -C /app remote set-url origin "$GIT_REMOTE_URL" 2>/dev/null || true
         echo "[init] Git remote origin → $GIT_REMOTE_URL"
-        git -C /app remote set-url origin "$GIT_REMOTE_URL"
     fi
 fi
 
