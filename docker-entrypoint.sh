@@ -21,6 +21,22 @@ if [ -n "$GIT_USER_EMAIL" ]; then
     git config --global user.email "$GIT_USER_EMAIL"
 fi
 
+# Override git remote URL if provided (for SSH push from Portainer)
+if [ -n "$GIT_REMOTE_URL" ] && [ -d /app/.git ]; then
+    current_remote=$(git -C /app remote get-url origin 2>/dev/null || echo "")
+    if [ "$current_remote" != "$GIT_REMOTE_URL" ]; then
+        echo "[init] Git remote origin → $GIT_REMOTE_URL"
+        git -C /app remote set-url origin "$GIT_REMOTE_URL"
+    fi
+fi
+
+# Configure SSH: don't verify host keys on first connect
+mkdir -p /root/.ssh
+if [ ! -f /root/.ssh/config ]; then
+    echo "Host github.com" > /root/.ssh/config
+    echo "  StrictHostKeyChecking accept-new" >> /root/.ssh/config
+fi
+
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Сайт:    http://0.0.0.0:4343"
 echo "  Админка: http://0.0.0.0:4343/admin/"

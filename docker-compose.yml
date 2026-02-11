@@ -9,6 +9,9 @@ services:
       # Данные CMS и загрузки (сохраняются между перезапусками)
       - ./data:/app/data
       - ./static/uploads:/app/static/uploads
+      # Git-репозиторий для кнопки «Опубликовать»
+      - ./.git:/app/.git
+      - ./.gitignore:/app/.gitignore
       # SSH-ключи для git push (read-only)
       - ~/.ssh:/root/.ssh:ro
     environment:
@@ -16,4 +19,5 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
       - GIT_USER_NAME=${GIT_USER_NAME:-Admin}
       - GIT_USER_EMAIL=${GIT_USER_EMAIL:-admin@example.com}
+      - GIT_REMOTE_URL=${GIT_REMOTE_URL:-}
       - FLASK_ENV=production
